@@ -31,7 +31,7 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
     private String gl_Position;
 
     private KitkatCamera camera;
-    private int cameraId=1;
+    private int cameraId=1; //0是后置
     private int mProgram;
 
     //顶点坐标
@@ -194,7 +194,6 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
         }else{
             Gl2Utils.rotate(matrix,270);
         }
-//        mOesFilter.setMatrix(matrix);
     }
 
     public SurfaceTexture getSurfaceTexture(){

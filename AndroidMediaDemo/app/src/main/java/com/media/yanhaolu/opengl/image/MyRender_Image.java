@@ -50,8 +50,9 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
     private String gl_FragColor;
 
     private Context context;
-    public MyRender_Image(View view){
+    public MyRender_Image(View view, Filter filter){
         this.context = view.getContext();
+        this.filter = filter;//变幻图片效果的类，是个枚举
         //顶点着色器
         gl_Position = ShaderUtils.loadFromAssetsFile("filter/half_color_vertex.sh", context.getResources());
         //片元着色器
@@ -75,8 +76,10 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
     }
 
     private int mProgram;
+    private EGLConfig eglConfig;
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        this.eglConfig = eglConfig;
         GLES20.glClearColor(1.0f,1.0f,1.0f,1.0f);
         GLES20.glEnable(GLES20.GL_TEXTURE_2D);
         mProgram = ShaderUtils.createProgram(gl_Position, gl_FragColor);
@@ -97,8 +100,15 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
     private float[] mViewMatrix=new float[16];
     private float[] mProjectMatrix=new float[16];
     private float[] mMVPMatrix=new float[16];
+
+    private boolean isHalf;
+    private float uXY;
+
+    private int width, height;
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
+        this.width = width;
+        this.height = height;
         GLES20.glViewport(0,0,width,height);
 
         int w=mBitmap.getWidth();
@@ -106,6 +116,7 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
         float sWH=w/(float)h;
 
         float sWidthHeight=width/(float)height;
+        uXY=sWidthHeight;
 
         if(width>height){
             if(sWH>sWidthHeight){
@@ -135,13 +146,24 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
 
     private int hChangeType;
     private int hChangeColor;
+
+    private Filter filter;
     @Override
     public void onDrawFrame(GL10 gl10) {
+        if(refreshFrag&&width!=0&&height!=0){
+            onSurfaceCreated(gl10, eglConfig);
+            onSurfaceChanged(gl10,width,height);
+            refreshFrag=false;
+        }
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT|GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glUseProgram(mProgram);
-        //        onDrawSet();//切换图片效果，待开发
-//        GLES20.glUniform1i(hChangeType,0);
-//        GLES20.glUniform3fv(hChangeColor,1, new float[]{0.0f,0.0f,0.0f},0);
+        // onDrawSet();  //切换图片效果
+        GLES20.glUniform1i(hChangeType,filter.getType());
+        GLES20.glUniform3fv(hChangeColor,1, filter.data,0);
+
+        //这两句是控制是否处理一半
+        GLES20.glUniform1i(hIsHalf,isHalf?1:0);
+        GLES20.glUniform1f(glHUxy,uXY);
         //启用句柄
         GLES20.glEnableVertexAttribArray(glHPosition);
 
@@ -181,5 +203,44 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
             return texture[0];
         }
         return 0;
+    }
+
+    public void setFilter(Filter filter){
+        this.filter = filter;
+    }
+    public void sethIsHalf(boolean isHalf){
+        this.isHalf = isHalf;
+    }
+    private boolean refreshFrag = false;
+    public void refresh(){
+        refreshFrag = true;
+    }
+
+    public enum Filter{
+
+        NONE(0,new float[]{0.0f,0.0f,0.0f}),
+        GRAY(1,new float[]{0.299f,0.587f,0.114f}),
+        COOL(2,new float[]{0.0f,0.0f,0.1f}),
+        WARM(2,new float[]{0.1f,0.1f,0.0f}),
+        BLUR(3,new float[]{0.006f,0.004f,0.002f}),
+        MAGN(4,new float[]{0.0f,0.0f,0.4f});
+
+
+        private int vChangeType;
+        private float[] data;
+
+        Filter(int vChangeType,float[] data){
+            this.vChangeType=vChangeType;
+            this.data=data;
+        }
+
+        public int getType(){
+            return vChangeType;
+        }
+
+        public float[] data(){
+            return data;
+        }
+
     }
 }

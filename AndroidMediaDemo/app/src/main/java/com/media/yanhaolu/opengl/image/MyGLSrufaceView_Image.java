@@ -26,7 +26,7 @@ public class MyGLSrufaceView_Image extends GLSurfaceView{
 
     private void init(){
         setEGLContextClientVersion(2);
-        render=new MyRender_Image(this);
+        render=new MyRender_Image(this, MyRender_Image.Filter.NONE);
         setRenderer(render);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
@@ -40,5 +40,9 @@ public class MyGLSrufaceView_Image extends GLSurfaceView{
 
     public MyRender_Image getRender(){
         return render;
+    }
+
+    public void setFilter(MyRender_Image.Filter filter){
+        render.setFilter(filter);
     }
 }
