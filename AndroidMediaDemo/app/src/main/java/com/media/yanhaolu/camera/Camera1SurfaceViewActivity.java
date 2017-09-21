@@ -30,7 +30,7 @@ public class Camera1SurfaceViewActivity extends AppCompatActivity implements Sur
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera1);
+        setContentView(R.layout.activity_camera1_surfaceview);
         ViewUtil.inject(this);
 
         initSurfaceView();
@@ -117,6 +117,21 @@ public class Camera1SurfaceViewActivity extends AppCompatActivity implements Sur
                 List<Camera.Size> previewSizes = mCamera.getParameters().getSupportedPreviewSizes();
                 List<Integer> previewFormats = mCamera.getParameters().getSupportedPreviewFormats();
                 List<Integer> previewFrameRates = mCamera.getParameters().getSupportedPreviewFrameRates();
+
+                for(Camera.Size s : pictureSizes){
+                    Log.i(TAG, "pictureSizes: width:" + s.width + "  height:" + s.height);
+                }
+                for(Camera.Size s : previewSizes){
+                    Log.i(TAG, "previewSizes: width:" + s.width + "  height:" + s.height);
+                }
+                for(Integer i : previewFormats){
+                    //ImageFormat.NV21 = 17
+                    Log.i(TAG, "previewFormats:" + i);
+                }
+                for(Integer i : previewFrameRates){
+                    Log.i(TAG, "previewFrameRates:" + i);
+                }
+
                 Log.i(TAG, "initCamera" + "cyy support parameters is ");
 
                 // 设置拍照和预览图片大小

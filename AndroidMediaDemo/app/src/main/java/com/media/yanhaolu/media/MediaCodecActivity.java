@@ -241,8 +241,12 @@ public class MediaCodecActivity extends AppCompatActivity {
         }
     }
     private void releaseMediaMuxer() {
-        mediaMuxer.stop();
-        mediaMuxer.release();
+        try {
+            mediaMuxer.stop();
+            mediaMuxer.release();
+        } catch (Exception e){
+            Log.e(TAG, e.toString());
+        }
     }
 
     private boolean isRotation = false;

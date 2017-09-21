@@ -14,6 +14,9 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
+    <!-- Tell the system this app requires OpenGL ES 2.0. -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/xiaoren"
@@ -34,7 +37,10 @@
         <activity android:name="com.media.yanhaolu.camera.Camera1TextureViewActivity" />
         <activity android:name="com.media.yanhaolu.camera.CameraMainActivity" />
         <activity android:name="com.media.yanhaolu.media.MediaExactorMediaMuxerActivity" />
-        <activity android:name="com.media.yanhaolu.media.MediaCodecActivity"></activity>
+        <activity android:name="com.media.yanhaolu.media.MediaCodecActivity"/>
+        <activity android:name="com.media.yanhaolu.opengl.opengles20.OpenGLES20Activity"/>
+        <activity android:name="com.media.yanhaolu.opengl.image.OpenGLES_ImageActivity"/>
+        <activity android:name="com.media.yanhaolu.opengl.camera.OpenGL_Camera_Activiry"/>
     </application>
 
 </manifest>
