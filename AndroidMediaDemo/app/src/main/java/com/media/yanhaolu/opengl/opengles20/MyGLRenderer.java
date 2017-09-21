@@ -100,20 +100,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
+        //使用透视投影，物体离视点越远，呈现出来的越小。离视点越近，呈现出来的越大。
+        /**
+         Matrix.frustumM (
+             float[] m,          //接收透视投影的变换矩阵
+             int mOffset,        //变换矩阵的起始位置（偏移量）
+             float left,         //相对观察点近面的左边距
+             float right,        //相对观察点近面的右边距
+             float bottom,       //相对观察点近面的下边距
+             float top,          //相对观察点近面的上边距
+             float near,         //相对观察点近面距离
+             float far)          //相对观察点远面距离
+         */
         Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
 
     }
 
-    /**
-     * Utility method for compiling a OpenGL shader.
-     *
-     * <p><strong>Note:</strong> When developing shaders, use the checkGlError()
-     * method to debug shader coding errors.</p>
-     *
-     * @param type - Vertex or fragment shader type.
-     * @param shaderCode - String containing the shader code.
-     * @return - Returns an id for the shader.
-     */
     public static int loadShader(int type, String shaderCode){
 
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
@@ -127,18 +129,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         return shader;
     }
 
-    /**
-    * Utility method for debugging OpenGL calls. Provide the name of the call
-    * just after making it:
-    *
-    * <pre>
-    * mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-    * MyGLRenderer.checkGlError("glGetUniformLocation");</pre>
-    *
-    * If the operation is not successful, the check throws an error.
-    *
-    * @param glOperation - Name of the OpenGL call to check.
-    */
+
     public static void checkGlError(String glOperation) {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
@@ -147,18 +138,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    /**
-     * Returns the rotation angle of the triangle shape (mTriangle).
-     *
-     * @return - A float representing the rotation angle.
-     */
+
     public float getAngle() {
         return mAngle;
     }
 
-    /**
-     * Sets the rotation angle of the triangle shape (mTriangle).
-     */
+
     public void setAngle(float angle) {
         mAngle = angle;
     }

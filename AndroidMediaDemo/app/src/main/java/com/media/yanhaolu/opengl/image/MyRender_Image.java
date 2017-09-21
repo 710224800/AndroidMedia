@@ -27,10 +27,10 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
 
     //顶点坐标
     private final float[] sPos={
-            -1.0f,1.0f,
-            -1.0f,-1.0f,
-            1.0f,1.0f,
-            1.0f,-1.0f
+            -1.0f,  1.0f,
+            -1.0f,  -1.0f,
+            1.0f,   1.0f,
+            1.0f,   -1.0f
     };
 
     //纹理坐标
@@ -120,6 +120,18 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
 
         if(width>height){
             if(sWH>sWidthHeight){
+                //使用正交投影，物体呈现出来的大小不会随着其距离视点的远近而发生变化
+                /**
+                 * Matrix.orthoM (
+                    float[] m,          //接收正交投影的变换矩阵
+                    int mOffset,        //变换矩阵的起始位置（偏移量）
+                    float left,         //相对观察点近面的左边距
+                    float right,        //相对观察点近面的右边距
+                    float bottom,       //相对观察点近面的下边距
+                    float top,          //相对观察点近面的上边距
+                    float near,         //相对观察点近面距离
+                    float far)          //相对观察点远面距离
+                 */
                 Matrix.orthoM(mProjectMatrix, 0, -sWidthHeight*sWH, sWidthHeight*sWH, -1,1, 3, 7);
             }else{
                 Matrix.orthoM(mProjectMatrix, 0, -sWidthHeight/sWH, sWidthHeight/sWH, -1,1, 3, 7);
