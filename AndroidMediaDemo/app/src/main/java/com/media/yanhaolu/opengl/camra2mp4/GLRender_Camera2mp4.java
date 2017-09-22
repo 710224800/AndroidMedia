@@ -1,4 +1,4 @@
-package com.media.yanhaolu.opengl.camera;
+package com.media.yanhaolu.opengl.camra2mp4;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -9,6 +9,9 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.view.View;
 
+import com.media.yanhaolu.opengl.camera.ICamera;
+import com.media.yanhaolu.opengl.camera.KitkatCamera;
+import com.media.yanhaolu.utils.EasyGlUtils;
 import com.media.yanhaolu.utils.Gl2Utils;
 import com.media.yanhaolu.utils.ShaderUtils;
 
@@ -23,14 +26,14 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by yanhaolu on 2017/9/20.
  */
 
-public class GLRender_Camera implements GLSurfaceView.Renderer{
+public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
 
     private Context context;
 
     private String gl_FragColor;
     private String gl_Position;
 
-    private KitkatCamera camera;
+    private KitkatCamera2mp4 camera;
     private int cameraId=1; //0是后置
     private int mProgram;
 
@@ -69,7 +72,7 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
      */
     protected FloatBuffer mTexBuffer;
 
-    public GLRender_Camera(View view){
+    public GLRender_Camera2mp4(View view){
         this.context = view.getContext();
         //顶点着色器
         gl_Position = ShaderUtils.loadFromAssetsFile("shader/oes_base_vertex.sh", context.getResources());
@@ -87,7 +90,7 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
         mTexBuffer.put(coord);
         mTexBuffer.position(0);
 
-        camera = new KitkatCamera();
+        camera = new KitkatCamera2mp4();
     }
 
     /**
@@ -112,6 +115,7 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
     private SurfaceTexture surfaceTexture;
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        /** 生成用来显示的texture **/
         textureId = createTextureID();
         surfaceTexture = new SurfaceTexture(textureId);
         surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
@@ -142,8 +146,13 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
         viewWidth = width;
         viewHeight = height;
+        deleteFrameBuffer();
+        GLES20.glGenFramebuffers(1,fFrame,0);
+        /** 再生成用来离屏的texture **/
+        EasyGlUtils.genTexturesWithParameter(1,fTexture,0,GLES20.GL_RGBA, imgWidth, imgHeight);
         calculateMatrix();
         GLES20.glViewport(0,0,width,height);
+        matrix = showMatrix;
     }
 
     private int textureType=0;      //默认使用Texture2D0
@@ -153,7 +162,37 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
         if(surfaceTexture!=null){
             surfaceTexture.updateTexImage();
         }
+        GLES20.glViewport(0,0,viewWidth,viewHeight);
         draw();
+
+        callbackIfNeeded();
+
+    }
+
+    //需要回调，则缩放图片到指定大小，读取数据并回调
+    private void callbackIfNeeded() {
+        if (frameCallback != null) {
+//            indexOutput = indexOutput++ >= 2 ? 0 : indexOutput;
+//            if (outPutBuffer[indexOutput] == null) {
+//                outPutBuffer[indexOutput] = ByteBuffer.allocate(frameCallbackWidth *
+//                        frameCallbackHeight*4);
+//            }
+            GLES20.glViewport(0, 0, frameCallbackWidth, frameCallbackHeight);
+            EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
+            matrix = callbackMatrix;
+            draw();
+            frameCallback();
+//            oneShotCallback = false;
+            EasyGlUtils.unBindFrameBuffer();
+            matrix = showMatrix;
+        }
+    }
+
+    //读取数据并回调
+    private void frameCallback(){
+        GLES20.glReadPixels(0, 0, frameCallbackWidth, frameCallbackHeight,
+                GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, outPutBuffer);
+        frameCallback.onFrame(outPutBuffer.array(),surfaceTexture.getTimestamp());
     }
 
     private int createTextureID(){
@@ -194,22 +233,35 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
         GLES20.glDisableVertexAttribArray(mHCoord);
     }
 
+    public void setOnPreviewFrameCallbackWithBuffer(final ICamera2mp4.PreviewFrameCallback callback){
+        camera.setOnPreviewFrameCallbackWithBuffer(callback);
+    }
+
     private int imgWidth, imgHeight;
     private int viewWidth, viewHeight;
     private float[] matrix=new float[16];
+    private float[] showMatrix = new float[16];//用于显示的变换矩阵
+    private float[] callbackMatrix = new float[16];//用于存放缩小后的回调给mp4的变换矩阵
     /**
      * 根据大多数的Android手机，前摄像头预览数据旋转了90度，并且左右镜像了，后摄像头旋转了270度。我们需要将其旋转回来。
      */
     private void calculateMatrix(){
-        Gl2Utils.getShowMatrix(matrix,this.imgWidth,this.imgHeight,this.viewWidth,this.viewHeight);
+        Gl2Utils.getShowMatrix(showMatrix,this.imgWidth,this.imgHeight,this.viewWidth,this.viewHeight);
         if(cameraId==1){
-            //镜像问题
-            Gl2Utils.flip(matrix,true,false);
-            //前置需要转90度
-            Gl2Utils.rotate(matrix,90);
+            Gl2Utils.flip(showMatrix,true,false);
+            Gl2Utils.rotate(showMatrix,90);
         }else{
-            //前置需要转270度
-            Gl2Utils.rotate(matrix,270);
+            Gl2Utils.rotate(showMatrix,270);
+        }
+        if(frameCallbackWidth != 0 && frameCallbackHeight !=0){
+            Gl2Utils.getShowMatrix(callbackMatrix,this.imgWidth,this.imgHeight,this.frameCallbackWidth,
+                    this.frameCallbackHeight);
+            if(cameraId==1){
+                Gl2Utils.flip(callbackMatrix,true,false);
+                Gl2Utils.rotate(callbackMatrix,90);
+            }else{
+                Gl2Utils.rotate(callbackMatrix,270);
+            }
         }
     }
 
@@ -251,5 +303,36 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
 
     public interface OnFrameAvailableListener {
         public void onFrameAvailable(SurfaceTexture surfaceTexture);
+    }
+
+    //camera数据回调接口
+    private FrameCallback frameCallback;
+    private int frameCallbackWidth, frameCallbackHeight; //回调数据的宽高
+    private ByteBuffer outPutBuffer;
+
+    //创建离屏buffer
+    private int[] fFrame = new int[1];
+    private int[] fTexture = new int[1];
+
+    private void deleteFrameBuffer() {
+        GLES20.glDeleteFramebuffers(1, fFrame, 0);
+        GLES20.glDeleteTextures(1, fTexture, 0);
+    }
+
+    public FrameCallback getFrameCallback() {
+        return frameCallback;
+    }
+
+    public void setFrameCallback(int frameCallbackWidth, int frameCallbackHeight, FrameCallback frameCallback) {
+        this.frameCallback = frameCallback;
+        this.frameCallbackWidth = frameCallbackWidth;
+        this.frameCallbackHeight = frameCallbackHeight;
+        if(outPutBuffer == null){
+            outPutBuffer = ByteBuffer.allocate(frameCallbackWidth * frameCallbackHeight * 4);
+        }
+    }
+
+    public interface FrameCallback {
+        void onFrame(byte[] bytes, long time);
     }
 }

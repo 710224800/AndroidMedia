@@ -41,6 +41,7 @@
         <activity android:name="com.media.yanhaolu.opengl.opengles20.OpenGLES20Activity"/>
         <activity android:name="com.media.yanhaolu.opengl.image.OpenGLES_ImageActivity"/>
         <activity android:name="com.media.yanhaolu.opengl.camera.OpenGL_Camera_Activiry"/>
+        <activity android:name="com.media.yanhaolu.opengl.camra2mp4.OpenGL_Camera2mp4_Activiry"/>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.media.yanhaolu.opengl.camera;
+package com.media.yanhaolu.opengl.camra2mp4;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -14,11 +14,11 @@ import com.media.yanhaolu.utils.PermissionUtils;
  * Created by yanhaolu on 2017/9/20.
  */
 
-public class OpenGL_Camera_Activiry extends AppCompatActivity{
+public class OpenGL_Camera2mp4_Activiry extends AppCompatActivity implements GLRender_Camera2mp4.FrameCallback{
 
     public static final String TAG = "OpenGL_Camera_Activiry";
 
-    private GLSurfaceView_Camera glSurfaceView;
+    private GLSurfaceView_Camera2mp4 glSurfaceView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,8 +32,18 @@ public class OpenGL_Camera_Activiry extends AppCompatActivity{
         public void run() {
 //            setContentView(R.layout.activity_camera);
 //            mCameraView= (CameraView)findViewById(R.id.mCameraView);
-            glSurfaceView = new GLSurfaceView_Camera(OpenGL_Camera_Activiry.this);
+            glSurfaceView = new GLSurfaceView_Camera2mp4(OpenGL_Camera2mp4_Activiry.this);
             setContentView(glSurfaceView);
+            glSurfaceView.setOnPreviewFrameCallbackWithBuffer(callback);
+            glSurfaceView.setFrameCallback(384,640,OpenGL_Camera2mp4_Activiry.this);
+        }
+    };
+
+    private final ICamera2mp4.PreviewFrameCallback callback = new ICamera2mp4.PreviewFrameCallback(){
+
+        @Override
+        public void onPreviewFrame(byte[] bytes, int width, int height) {
+
         }
     };
 
@@ -62,5 +72,10 @@ public class OpenGL_Camera_Activiry extends AppCompatActivity{
             glSurfaceView.switchCamera();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFrame(byte[] bytes, long time) {
+        Log.i(TAG, bytes.toString() + time);
     }
 }

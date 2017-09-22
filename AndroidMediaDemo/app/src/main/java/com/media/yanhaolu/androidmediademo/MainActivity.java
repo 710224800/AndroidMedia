@@ -16,6 +16,7 @@ import com.media.yanhaolu.audio.AudioMainActivity;
 import com.media.yanhaolu.media.MediaCodecActivity;
 import com.media.yanhaolu.media.MediaExactorMediaMuxerActivity;
 import com.media.yanhaolu.opengl.camera.OpenGL_Camera_Activiry;
+import com.media.yanhaolu.opengl.camra2mp4.OpenGL_Camera2mp4_Activiry;
 import com.media.yanhaolu.opengl.image.OpenGLES_ImageActivity;
 import com.media.yanhaolu.opengl.opengles20.OpenGLES20Activity;
 
@@ -41,10 +42,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         add("OpenGLES20Activity",OpenGLES20Activity.class);
         add("Opengl显示图片", OpenGLES_ImageActivity.class);
         add("Opengl预览Camera", OpenGL_Camera_Activiry.class);
+        add("Opengl预览Camera生成mp4", OpenGL_Camera2mp4_Activiry.class);
         mList.setAdapter(new MenuAdapter());
     // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+//        TextView tv = (TextView) findViewById(R.id.sample_text);
+//        tv.setText(stringFromJNI());
     }
 
 
@@ -111,10 +113,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native String stringFromJNI();
+//    public native String stringFromJNI();
+//
+//    // Used to load the 'native-lib' library on application startup.
+//    static {
+//        System.loadLibrary("native-lib");
+//    }
 
-    // Used to load the 'native-lib' library on application startup.
+
     static {
-        System.loadLibrary("native-lib");
+        System.loadLibrary("VideoConvert");
     }
 }
