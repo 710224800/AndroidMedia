@@ -27,11 +27,25 @@ public class GLSurfaceView_Camera extends GLSurfaceView {
         render = new GLRender_Camera(this);
         setRenderer(render);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        render.getSurfaceTexture().setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+        render.setOnFrameAvailableListener(new GLRender_Camera.OnFrameAvailableListener() {
             @Override
             public void onFrameAvailable(SurfaceTexture surfaceTexture) {
                 requestRender();
             }
         });
+    }
+
+    public void switchCamera(){
+        render.switchCamera();
+        render.runSwitch();
+        onPause();
+        onResume();
+        requestRender();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        render.closeCamera();
     }
 }

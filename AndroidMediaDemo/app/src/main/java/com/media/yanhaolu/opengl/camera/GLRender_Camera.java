@@ -34,6 +34,8 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
     private int cameraId=1; //0是后置
     private int mProgram;
 
+    private Runnable mRunnable;
+
     //顶点坐标
     private float pos[] = {
             -1.0f,  1.0f,
@@ -86,9 +88,6 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
         mTexBuffer.position(0);
 
         camera = new KitkatCamera();
-
-        textureId = createTextureID();
-        surfaceTexture = new SurfaceTexture(textureId);
     }
 
     /**
@@ -113,8 +112,23 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
     private SurfaceTexture surfaceTexture;
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+//        if(mRunnable!=null){
+//            mRunnable.run();
+//            mRunnable=null;
+//        }
 //        GLES20.glClearColor(1.0f,1.0f,1.0f,1.0f);
 //        GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+        textureId = createTextureID();
+        surfaceTexture = new SurfaceTexture(textureId);
+        surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+            @Override
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                if(onFrameAvailableListener != null){
+                    onFrameAvailableListener.onFrameAvailable(surfaceTexture);
+                }
+            }
+        });
+
         mProgram = ShaderUtils.createProgram(gl_Position, gl_FragColor);
         mHPosition= GLES20.glGetAttribLocation(mProgram, "vPosition");
         mHCoord=GLES20.glGetAttribLocation(mProgram,"vCoord");
@@ -198,5 +212,41 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
 
     public SurfaceTexture getSurfaceTexture(){
         return surfaceTexture;
+    }
+
+    public void setCameraId(int cameraId){
+        this.cameraId = cameraId;
+    }
+
+    public void closeCamera(){
+        camera.close();
+    }
+
+    public void runSwitch(){
+        mRunnable.run();
+    }
+
+    public void switchCamera(){
+        mRunnable=new Runnable() {
+            @Override
+            public void run() {
+                camera.close();
+                cameraId=cameraId==1?0:1;
+            }
+        };
+    }
+
+    OnFrameAvailableListener onFrameAvailableListener;
+
+    public OnFrameAvailableListener getOnFrameAvailableListener() {
+        return onFrameAvailableListener;
+    }
+
+    public void setOnFrameAvailableListener(OnFrameAvailableListener onFrameAvailableListener) {
+        this.onFrameAvailableListener = onFrameAvailableListener;
+    }
+
+    public interface OnFrameAvailableListener {
+        public void onFrameAvailable(SurfaceTexture surfaceTexture);
     }
 }

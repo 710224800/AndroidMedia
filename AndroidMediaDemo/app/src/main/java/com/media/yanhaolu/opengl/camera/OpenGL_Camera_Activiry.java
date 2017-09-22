@@ -4,6 +4,8 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.media.yanhaolu.utils.PermissionUtils;
 
@@ -42,5 +44,20 @@ public class OpenGL_Camera_Activiry extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         glSurfaceView.onPause();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("切换摄像头").setTitle("切换摄像头").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String name=item.getTitle().toString();
+        if(name.equals("切换摄像头")){
+            glSurfaceView.switchCamera();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
