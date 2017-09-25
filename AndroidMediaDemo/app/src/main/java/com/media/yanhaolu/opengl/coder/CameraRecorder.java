@@ -36,18 +36,50 @@ public class CameraRecorder {
     public static final String TAG="RECORD";
     private final Object LOCK=new Object();
 
-    private MediaMuxer mMuxer;  //多路复用器，用于音视频混合
-    private String path;        //文件保存的路径
-    private String postfix;     //文件后缀
-
-    private String audioMime = "audio/mp4a-latm";   //音频编码的Mime
-    private AudioRecord mRecorder;   //录音器
-    private MediaCodec mAudioEnc;   //编码器，用于音频编码
-    private int audioRate=128000;   //音频编码的密钥比特率
-    private int sampleRate=48000;   //音频采样率
-    private int channelCount=2;     //音频编码通道数
-    private int channelConfig= AudioFormat.CHANNEL_IN_STEREO;   //音频录制通道,默认为立体声
-    private int audioFormat= AudioFormat.ENCODING_PCM_16BIT; //音频录制格式，默认为PCM16Bit
+    /**
+     * 多路复用器，用于音视频混合
+     */
+    private MediaMuxer mMuxer;
+    /**
+     * 文件保存的路径
+     */
+    private String path;
+    /**
+     * 文件后缀
+     */
+    private String postfix;
+    /**
+     * 音频编码的Mime
+     */
+    private String audioMime = "audio/mp4a-latm";
+    /**
+     * 录音器
+     */
+    private AudioRecord mRecorder;
+    /**
+     * 编码器，用于音频编码
+     */
+    private MediaCodec mAudioEnc;
+    /**
+     * 音频编码的密钥比特率
+     */
+    private int audioRate=128000;
+    /**
+     * 音频采样率
+     */
+    private int sampleRate=48000;
+    /**
+     * 音频编码通道数
+     */
+    private int channelCount=2;
+    /**
+     * 音频录制通道,默认为立体声
+     */
+    private int channelConfig= AudioFormat.CHANNEL_IN_STEREO;
+    /**
+     * 音频录制格式，默认为PCM16Bit
+     */
+    private int audioFormat= AudioFormat.ENCODING_PCM_16BIT;
 
 //    private byte[] buffer;
     private boolean isRecording;
@@ -56,12 +88,26 @@ public class CameraRecorder {
     private int convertType;
 
     private Thread mAudioThread;
-
+    /**
+     * 编码器，用于视频编码
+     */
     private MediaCodec mVideoEnc;
-    private String videoMime="video/avc";   //视频编码格式
-    private int videoRate=2048000;       //视频编码波特率
-    private int frameRate=24;           //视频编码帧率
-    private int frameInterval=1;        //视频编码关键帧，1秒一关键帧
+    /**
+     * 视频编码格式
+     */
+    private String videoMime="video/avc";
+    /**
+     * 视频编码波特率
+     */
+    private int videoRate=2048000;
+    /**
+     * 视频编码帧率
+     */
+    private int frameRate=24;
+    /**
+     * 视频编码关键帧，1秒一关键帧
+     */
+    private int frameInterval=1;
 
     private int fpsTime;
 

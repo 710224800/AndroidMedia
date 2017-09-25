@@ -57,4 +57,11 @@ public class GLSurfaceView_Camera2mp4 extends GLSurfaceView {
         render.setFrameCallback(frameCallbackWidth,frameCallbackHeight,frameCallback);
     }
 
+    public void startRecord(){
+        render.startRecord();
+    }
+    public void stopRecord(){
+        render.stopRecord();
+    }
+
 }

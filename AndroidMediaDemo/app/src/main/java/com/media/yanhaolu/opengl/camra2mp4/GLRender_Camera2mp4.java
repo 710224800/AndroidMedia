@@ -7,6 +7,7 @@ import android.hardware.Camera;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.View;
 
 import com.media.yanhaolu.opengl.camera.ICamera;
@@ -27,6 +28,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 
 public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
+
+    public static final String TAG = "GLRender_Camera2mp4";
 
     private Context context;
 
@@ -115,9 +118,13 @@ public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
     private SurfaceTexture surfaceTexture;
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        Log.i(TAG, "onSurfaceCreated");
         /** 生成用来显示的texture **/
-        textureId = createTextureID();
-        surfaceTexture = new SurfaceTexture(textureId);
+        showTextureId = createTextureID();
+        surfaceTexture = new SurfaceTexture(showTextureId);
+
+        textureId = showTextureId;
+
         surfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
             @Override
             public void onFrameAvailable(SurfaceTexture surfaceTexture) {
@@ -144,6 +151,7 @@ public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
+        Log.i(TAG, "onSurfaceChanged");
         viewWidth = width;
         viewHeight = height;
         deleteFrameBuffer();
@@ -157,27 +165,42 @@ public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
 
     private int textureType=0;      //默认使用Texture2D0
     private int textureId;
+
+    private int showTextureId;
     @Override
     public void onDrawFrame(GL10 gl10) {
         if(surfaceTexture!=null){
             surfaceTexture.updateTexImage();
         }
         GLES20.glViewport(0,0,viewWidth,viewHeight);
+
+        textureId = showTextureId;//这句注释掉也没有影响，这块还需要后续研究，里面的机制
+
         draw();
 
         callbackIfNeeded();
 
     }
 
+    private boolean recording = false;
+    public void startRecord(){
+        recording = true;
+    }
+    public void stopRecord(){
+        recording = false;
+    }
+
     //需要回调，则缩放图片到指定大小，读取数据并回调
     private void callbackIfNeeded() {
-        if (frameCallback != null) {
+        if (frameCallback != null && recording) {
 //            indexOutput = indexOutput++ >= 2 ? 0 : indexOutput;
 //            if (outPutBuffer[indexOutput] == null) {
 //                outPutBuffer[indexOutput] = ByteBuffer.allocate(frameCallbackWidth *
 //                        frameCallbackHeight*4);
 //            }
+            //离屏渲染
             GLES20.glViewport(0, 0, frameCallbackWidth, frameCallbackHeight);
+            textureId = fTexture[0];
             EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
             matrix = callbackMatrix;
             draw();
@@ -185,6 +208,7 @@ public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
 //            oneShotCallback = false;
             EasyGlUtils.unBindFrameBuffer();
             matrix = showMatrix;
+            //离屏渲染结果
         }
     }
 
@@ -253,14 +277,17 @@ public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
         }else{
             Gl2Utils.rotate(showMatrix,270);
         }
+        
+        /** 下面这个是离层渲染的回调矩阵，不知道为什么和预览的不一样， **/
         if(frameCallbackWidth != 0 && frameCallbackHeight !=0){
             Gl2Utils.getShowMatrix(callbackMatrix,this.imgWidth,this.imgHeight,this.frameCallbackWidth,
                     this.frameCallbackHeight);
             if(cameraId==1){
-                Gl2Utils.flip(callbackMatrix,true,false);
-                Gl2Utils.rotate(callbackMatrix,90);
+//                Gl2Utils.flip(callbackMatrix,true,false);
+                Gl2Utils.rotate(callbackMatrix,-90);
             }else{
-                Gl2Utils.rotate(callbackMatrix,270);
+                Gl2Utils.flip(callbackMatrix,true,false);
+                Gl2Utils.rotate(callbackMatrix,-270);
             }
         }
     }

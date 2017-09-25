@@ -147,6 +147,8 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 7.0f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         //计算变换矩阵
         Matrix.multiplyMM(mMVPMatrix,0,mProjectMatrix,0,mViewMatrix,0);
+
+        int textureId=createTexture();
     }
 
     private int glHPosition;
@@ -187,7 +189,6 @@ public class MyRender_Image implements GLSurfaceView.Renderer {
 
         GLES20.glUniform1i(glHTexture, 0);
 
-        int textureId=createTexture();
         //传入顶点坐标
         GLES20.glVertexAttribPointer(glHPosition,2,GLES20.GL_FLOAT,false,0,bPos);
         //传入纹理坐标

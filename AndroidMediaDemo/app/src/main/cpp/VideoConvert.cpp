@@ -63,13 +63,13 @@ void rgbaToYuv(int width,int height,unsigned char * rgb,unsigned char * yuv,int 
 
 
 /*
- * Class:     com_yanhaolu_jni_DataConvert
+ * Class:     com_media_yanhaolu_jni_DataConvert
  * Method:    rgbaToYuv420p
  * Signature: ([BII[B)V
  */
 extern "C" {
 
-    void Java_com_yanhaolu_jni_DataConvert_rgbaToYuv
+    void Java_com_media_yanhaolu_jni_DataConvert_rgbaToYuv
       (JNIEnv * env, jobject obj, jbyteArray rgba, jint width, jint height,
       jbyteArray yuv,jint type){
         jbyte * rgbaBuffer = env->GetByteArrayElements(rgba,0);
