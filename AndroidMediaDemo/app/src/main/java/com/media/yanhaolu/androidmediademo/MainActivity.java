@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.media.yanhaolu.camera.CameraMainActivity;
+import com.media.yanhaolu.ffmpeg.FFmpegActivity;
 import com.media.yanhaolu.image.Drag;
 import com.media.yanhaolu.audio.AudioMainActivity;
 import com.media.yanhaolu.media.MediaCodecActivity;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         add("Opengl显示图片", OpenGLES_ImageActivity.class);
         add("Opengl预览Camera", OpenGL_Camera_Activiry.class);
         add("Opengl预览Camera生成mp4", OpenGL_Camera2mp4_Activiry.class);
+        add("hello_FFmpeg", FFmpegActivity.class);
         mList.setAdapter(new MenuAdapter());
     // Example of a call to a native method
 //        TextView tv = (TextView) findViewById(R.id.sample_text);

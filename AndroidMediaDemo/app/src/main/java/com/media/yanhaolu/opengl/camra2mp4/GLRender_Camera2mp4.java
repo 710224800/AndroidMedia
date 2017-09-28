@@ -277,7 +277,7 @@ public class GLRender_Camera2mp4 implements GLSurfaceView.Renderer{
         }else{
             Gl2Utils.rotate(showMatrix,270);
         }
-        
+
         /** 下面这个是离层渲染的回调矩阵，不知道为什么和预览的不一样， **/
         if(frameCallbackWidth != 0 && frameCallbackHeight !=0){
             Gl2Utils.getShowMatrix(callbackMatrix,this.imgWidth,this.imgHeight,this.frameCallbackWidth,

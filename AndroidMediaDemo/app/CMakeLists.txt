@@ -42,3 +42,6 @@ target_link_libraries( # Specifies the target library.
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )
+
+#添加子目录,将会调用子目录中的CMakeLists.txt
+ADD_SUBDIRECTORY(src/main/cpp/ffmpeg)

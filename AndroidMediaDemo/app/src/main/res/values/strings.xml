@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AndroidMediaDemo</string>
+    <string name="title_activity_ffmpeg">FFmpegActivity</string>
 </resources>

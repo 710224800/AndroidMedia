@@ -37,6 +37,13 @@ android {
             cmake {
                 cppFlags ""
             }
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+            sourceSets.main {
+                jniLibs.srcDirs = ['libs', 'src/main/jniLibs']
+                jni.srcDirs = []
+            }
         }
 //        jackOptions {
 //            enabled true
@@ -53,6 +60,9 @@ android {
             path "CMakeLists.txt"
         }
     }
+    dataBinding{
+        enabled true
+    }
 }
 
 dependencies {
@@ -63,5 +73,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 }
