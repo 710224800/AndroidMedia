@@ -31,7 +31,7 @@ public class GLRender_Camera implements GLSurfaceView.Renderer{
     private String gl_Position;
 
     private KitkatCamera camera;
-    private int cameraId=1; //0是后置
+    private int cameraId=0; //0是后置
     private int mProgram;
 
     private Runnable mRunnable;

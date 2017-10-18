@@ -21,6 +21,7 @@ import java.util.List;
  * Description:
  */
 public class KitkatCamera implements ICamera {
+    public static final String TAG = "KitkatCamera";
 
     private Config mConfig;
     private Camera mCamera;
@@ -50,7 +51,7 @@ public class KitkatCamera implements ICamera {
             param.setPictureSize(picSize.width,picSize.height);
             param.setPreviewSize(preSize.width,preSize.height);
             mCamera.setParameters(param);
-            Log.e("wuwang","camera previewSize:"+preSize.height+"/"+preSize.width);
+            Log.d(TAG,"camera previewSize:"+preSize.height+"/"+preSize.width);
             return true;
         }
         return false;

@@ -50,11 +50,9 @@ public class Camera1TextureViewActivity extends AppCompatActivity {
         }
         Camera.Parameters parameters = mCamera.getParameters();
         Camera.Size mSize = parameters.getSupportedPreviewSizes().get(0);
+        Camera.Size pictureSize = parameters.getSupportedPictureSizes().get(0);
         parameters.setPreviewSize(mSize.width, mSize.height);
-        parameters.setPreviewFpsRange(4, 10);
-        parameters.setPictureFormat(ImageFormat.JPEG);
-        parameters.setJpegQuality(80);
-        parameters.setPictureSize(mSize.width, mSize.height);
+        parameters.setPictureSize(pictureSize.width, pictureSize.height);
         try {
             mCamera.setPreviewTexture(mSurfaceTexture);
         } catch (IOException e) {
